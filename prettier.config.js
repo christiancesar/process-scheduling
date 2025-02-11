@@ -1,17 +1,11 @@
-// prettier.config.js, .prettierrc.js, prettier.config.cjs, or .prettierrc.cjs
-
-/**
- * @see https://prettier.io/docs/en/configuration.html
- * @type {import("prettier").Config}
- */
-const config = {
-  trailingComma: "es5",
-  tabWidth: 2,
-  semi: true,
-  singleQuote: true,
+const prettierConfig = {
   printWidth: 80,
-  endOfLine: "lf",
-  arrowParens: "avoid",
-};
+  tabWidth: 2,
+  singleQuote: true,
+  trailingComma: 'all',
+  arrowParens: 'always',
+  semi: true,
+  endOfLine: 'auto',
+}
 
-module.exports = config;
+export default prettierConfig;
