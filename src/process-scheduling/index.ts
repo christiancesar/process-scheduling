@@ -231,7 +231,7 @@ class FirstInFirstOutScheduler {
 // Simulação de escalonamento FIFO
 const scheduler = new FirstInFirstOutScheduler();
 
-Array.from({ length: 1 }).forEach(() => {
+Array.from({ length: 10 }).forEach(() => {
   scheduler.addProcess(
     new Process({ name: `${faker.system.fileName({ extensionCount: 1 })}` }),
   );

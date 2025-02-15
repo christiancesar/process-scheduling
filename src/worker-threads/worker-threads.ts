@@ -9,6 +9,7 @@ import {
 import { singleThread } from './single-thread.js';
 
 const __filename = url.fileURLToPath(import.meta.url);
+// console.log(__filename);
 
 type WorkerThreadData = {
   limit?: number;
