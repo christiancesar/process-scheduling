@@ -14,6 +14,7 @@
   "type": "module",
   "scripts": {
     "dev": "node --no-warnings=ExperimentalWarning --loader ts-node/esm src/index.ts",
+    "dev:python": "py src/memory-management/index.py",
     "test": "vitest run",
     "test:watch": "vitest --watch",
     "test:cov": "vitest run --coverage",
