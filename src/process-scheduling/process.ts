@@ -1,0 +1,146 @@
+import { Temporal } from '@js-temporal/polyfill';
+
+let identifier = 0;
+
+export type StatusProcess =
+  | 'created'
+  | 'waiting'
+  | 'ready'
+  | 'running'
+  | 'finished';
+
+export type StateProcess = {
+  status: StatusProcess;
+  stateChangeWhen: Date; //Quando o processo mudou de estado
+};
+
+export class Process {
+  private id: number;
+  private name: string;
+
+  //Todo: Criar uma event listner para monitorar as mudanças de estado do processo e incrementar dentro de state
+  private currentStatus: StatusProcess; //Estado do processo
+  private processType: 'CPU' | 'I/O'; //Tipo de processo
+  private createdTime: number; //Tempo de criação
+  private waitTime: number; //Tempo de espera
+  private runningTime: number; //Tempo de execução na CPU
+  private readyTime: number; //Tempo de pronto na CPU
+  private turnaround: number; //Tempo de processamento desde a criação até a finalização
+  private createdAt: Date;
+  private fineshedAt: Date | null;
+
+  private states: StateProcess[];
+
+  constructor({ name }: { name: string }) {
+    const createdDate = new Date();
+
+    this.id = identifier++;
+    this.name = name;
+    this.currentStatus = 'created';
+    this.createdTime = 0;
+    this.waitTime = 0;
+    this.runningTime = 0;
+    this.turnaround = 0;
+    this.readyTime = 0;
+    this.fineshedAt = null;
+    this.createdAt = createdDate;
+
+    this.states = [
+      {
+        status: 'created',
+        stateChangeWhen: createdDate,
+      },
+      {
+        status: 'waiting',
+        stateChangeWhen: new Date(),
+      },
+    ];
+
+    this.currentStatus = 'waiting';
+    this.processType = Math.random() > 0.5 ? 'CPU' : 'I/O';
+  }
+
+  public end() {
+    console.log(`Processo finalizado, mostrando informações:`);
+    this.setStatus('finished');
+
+    const waitStart = this.states.find(
+      (state) => state.status === 'waiting',
+    )?.stateChangeWhen;
+    const readyStart = this.states.find(
+      (state) => state.status === 'ready',
+    )?.stateChangeWhen;
+    const runningStart = this.states.find(
+      (state) => state.status === 'running',
+    )?.stateChangeWhen;
+    const finished = this.states.find(
+      (state) => state.status === 'finished',
+    )?.stateChangeWhen;
+
+    if (waitStart) {
+      this.createdTime = waitStart.getTime() - this.createdAt.getTime();
+    }
+
+    if (waitStart && readyStart) {
+      this.waitTime = readyStart.getTime() - waitStart.getTime();
+    }
+
+    if (readyStart && runningStart) {
+      this.readyTime = runningStart.getTime() - readyStart.getTime();
+    }
+
+    if (runningStart && finished) {
+      this.runningTime = finished.getTime() - runningStart.getTime();
+    }
+
+    if (finished) {
+      this.fineshedAt = finished;
+    }
+
+    this.turnaround = this.waitTime + this.readyTime + this.runningTime;
+
+    console.log(this.metadata());
+  }
+
+  public getNameProcess() {
+    return this.name;
+  }
+
+  public setStatus(status: StatusProcess) {
+    this.currentStatus = status;
+    this.states.push({
+      status,
+      stateChangeWhen: new Date(),
+    });
+  }
+
+  private getDurationFormatted(time: number): string {
+    return `${Temporal.Duration.from({ milliseconds: time }).total({ unit: 'seconds' }).toFixed(5)}s`;
+  }
+
+  private getStatesFormatted() {
+    return this.states.map(
+      (state, index) =>
+        `\n\t[#${index + 1}][${state.status}]: ${state.stateChangeWhen}`,
+    );
+  }
+
+  public metadata() {
+    return `
+      Id: ${this.id}
+      Nome do processo: ${this.name}
+      Tipo do processo: ${this.processType}
+      Status atual: ${this.currentStatus}
+      Tempo de criação: ${this.getDurationFormatted(this.createdTime)}
+      Tempo de espera: ${this.getDurationFormatted(this.waitTime)}
+      Tempo de pronto: ${this.getDurationFormatted(this.readyTime)}
+      Tempo de execução: ${this.getDurationFormatted(this.runningTime)}
+      Tempo de turnaround: ${this.getDurationFormatted(this.turnaround)}
+      Criado em: ${this.createdAt}
+      Finalizado em: ${this.fineshedAt}
+
+      Estados:
+      ${this.getStatesFormatted()}
+    `;
+  }
+}
