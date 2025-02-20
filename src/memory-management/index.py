@@ -17,8 +17,8 @@ class ProcessStatus(Enum):
     ALLOCATED = "allocated"
     NOT_ALLOCATED = "not_allocated"
 
-
 class Possition:
+    __name: str
     def __init__(self, start: str, end: str):
         self.start = start
         self.end = end

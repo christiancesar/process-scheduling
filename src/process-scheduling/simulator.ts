@@ -9,9 +9,16 @@ export class Simulator {
   constructor(simulationProcessCount?: number) {
     this.scheduler = new FirstInFirstOutScheduler();
     this.simulationProcessCount = simulationProcessCount || 10;
+    if (
+      simulationProcessCount === null ||
+      simulationProcessCount === undefined ||
+      simulationProcessCount <= 0
+    ) {
+      this.simulationProcessCount = 10;
+    }
   }
 
-  async run() {
+  public async run() {
     Array.from({ length: this.simulationProcessCount }).forEach(() => {
       this.scheduler.addProcess(
         new Process({
