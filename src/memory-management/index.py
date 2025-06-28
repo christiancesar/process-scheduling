@@ -3,22 +3,24 @@ from enum import Enum
 from json import dumps
 from typing import List
 
-from faker import Faker
+# from faker import Faker
 
 PROCESS_SIZE = 10
-MEMORY_BLOCK_SIZE = 10
+MEMORY_BLOCK_SIZE = 100
 
 identifier = 0
 
-faker = Faker()
+# faker = Faker()
 
 
 class ProcessStatus(Enum):
     ALLOCATED = "allocated"
     NOT_ALLOCATED = "not_allocated"
 
+
 class Possition:
     __name: str
+
     def __init__(self, start: str, end: str):
         self.start = start
         self.end = end
@@ -37,7 +39,8 @@ class Process:
 
         self.id = identifier
         self.status = ProcessStatus.NOT_ALLOCATED
-        self.name = faker.file_name(extension="exe")
+        # self.name = faker.file_name(extension="exe")
+        self.name = "process {}".format(self.id)
         self.size = random.randint(1, 100)
         self.original_size = self.size
         self.allocate_size = 0
@@ -137,8 +140,6 @@ print(dumps(memory.to_dict(), indent=2))
 print("\nListing processes\n")
 
 print(dumps([process.to_dict() for process in processes], indent=2))
-
-# Create memory management
 
 # {'address': '0x3e8', 'size': 1, 'processId': None, 'status': <Status.FREE: 'free'>}
 # {'address': '0x7d0', 'size': 1, 'processId': None, 'status': <Status.FREE: 'free'>}
